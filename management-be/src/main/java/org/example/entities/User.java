@@ -52,12 +52,6 @@ public class User implements EnhancedUserDetails {
         this.department = department;
     }
 
-    public User(String login, String password, String email, UserRole role) {
-        this.login = login;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
