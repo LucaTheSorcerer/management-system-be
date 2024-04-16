@@ -41,3 +41,9 @@ build/
 .env
 .application.properties
 ./src/main/resources/application.yml
+/src/main/resources/amigo.p12
+/src/main/resources/application.properties
+/src/main/resources/application.yml
+/target/classes/amigo.p12
+/target/classes/application.properties
+/target/classes/application.yml
