@@ -129,8 +129,7 @@ public class AuthService implements UserDetailsService {
                 data.lastName(),
                 data.email(),
                 data.phone(),
-                data.role(),
-                data.department()
+                data.role()
         );
         return repository.save(newUser);
 

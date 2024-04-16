@@ -10,6 +10,5 @@ public record SignUpDto(
         String firstName,
         String lastName,
         String phone,
-        UserRole role,
-        Department department
+        UserRole role
 ) {}

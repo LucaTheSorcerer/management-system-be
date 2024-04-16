@@ -10,7 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.validation.constraints.Email;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table
 @Entity(name = "employee")
@@ -33,6 +35,13 @@ public class User implements EnhancedUserDetails {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @ManyToMany
+    @JoinTable(
+            name = "employee_skills",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private Set<Skill> skills = new HashSet<>();
     @Email
     @Column(unique = true)
     private String email;
@@ -50,6 +59,17 @@ public class User implements EnhancedUserDetails {
         this.phone = phone;
         this.role = role;
         this.department = department;
+    }
+
+
+    public User(String login, String password, String firstName, String lastName, String email, String phone, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
     }
 
 
