@@ -43,7 +43,7 @@ public class User implements EnhancedUserDetails {
     )
     private Set<Skill> skills = new HashSet<>();
     @Email
-    @Column(unique = true)
+    @Column(unique = false)
     private String email;
     private String phone;
 
