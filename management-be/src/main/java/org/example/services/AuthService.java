@@ -23,8 +23,13 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class AuthService implements UserDetailsService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     UserRepository repository;
@@ -35,66 +40,8 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-
-
-
     @Autowired
     PasswordResetTokenRepository passwordResetTokenRepository;
-
-
-
-//    public void initiatePasswordReset(String email) {
-//        EnhancedUserDetails user = (EnhancedUserDetails) repository.findByEmail(email);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("No user found with email: " + email);
-//        }
-//        String token = UUID.randomUUID().toString();
-//        PasswordResetToken resetToken = new PasswordResetToken();
-//        resetToken.setToken(token);
-//        resetToken.setUser((User) user); // This cast is now safe because EnhancedUserDetails is guaranteed to be a User
-//        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
-//        passwordResetTokenRepository.save(resetToken);
-//
-//        sendResetTokenEmail(user.getEmail(), token);
-//
-//        // Send email logic
-//    }
-
-
-
-    public void completePasswordReset(String token, String newPassword) {
-        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token);
-        if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token is invalid or expired");
-        }
-        User user = resetToken.getUser();
-        String encodedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
-        repository.save(user);
-
-        // Invalidate the token after use
-        passwordResetTokenRepository.delete(resetToken);
-    }
-
-//    private void sendResetTokenEmail(String email, String token) {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(email);
-//        message.setSubject("Password Reset Request");
-//        message.setText("To reset your password, click the link below:\n" + "http://example.com/reset-password?token=" + token);
-//        mailSender.send(message);
-//    }
-
-//    private void sendResetTokenEmail(String email, String token) {
-//        String resetPasswordLink = "https://localhost:3000/reset-password?token=" + token;
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(email);
-//        message.setSubject("Password Reset Request");
-//        message.setText("To reset your password, click the link below:\n" + resetPasswordLink);
-//        mailSender.send(message);
-//    }
-
-
 
 
     @Override
@@ -105,6 +52,7 @@ public class AuthService implements UserDetailsService {
 
     public UserDetails signUp(SignUpDto data) throws Exception {
 
+        log.info("Attempting to sign up user with username: {}", data.login());
         if (repository.findByLogin(data.login()) != null) {
             throw  new JwtException("Username already exists");
         }
@@ -117,6 +65,7 @@ public class AuthService implements UserDetailsService {
         if (!passwordErrors.isEmpty()) {
             StringJoiner joiner = new StringJoiner(" ");
             passwordErrors.forEach(joiner::add);
+            log.error("Password validation errors: {}", joiner.toString());
             throw new Exception("Password does not meet the policy requirements: " + joiner);
         }
 
@@ -131,6 +80,8 @@ public class AuthService implements UserDetailsService {
                 data.phone(),
                 data.role()
         );
+        log.info("User signed up successfully with username: {}", data.login());
+
         return repository.save(newUser);
 
     }

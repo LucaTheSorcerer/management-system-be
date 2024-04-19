@@ -7,7 +7,7 @@ public interface DepartmentService {
 
     Department createDepartment(Department department);
 
-    Department updateDepartment(Long id, Department department);
+    Department updateDepartment(Long id, Department department) throws InterruptedException;
 
     Department getDepartmentById(Long id);
 

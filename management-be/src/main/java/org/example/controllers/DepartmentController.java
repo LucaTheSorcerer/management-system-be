@@ -37,16 +37,32 @@ public class DepartmentController {
         }
     }
 
+//    @PutMapping("/{id}")
+//    @Operation(summary = "Update an existing department")
+//    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody Department department) {
+//        try {
+//            Department updatedDepartment = departmentService.updateDepartment(id, department);
+//            return ResponseEntity.ok(updatedDepartment);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(new ErrorResponseDto(e.getMessage()));
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing department")
-    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody Department department) {
+    public ResponseEntity<?> updateDepartment(@PathVariable("id") Long id, @Valid @RequestBody Department department) {
         try {
             Department updatedDepartment = departmentService.updateDepartment(id, department);
             return ResponseEntity.ok(updatedDepartment);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErrorResponseDto(e.getMessage()));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get department by ID")
