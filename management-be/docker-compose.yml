@@ -1,85 +1,33 @@
-#services:
-#  postgres:
-#    container_name: management-database
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres-data:/var/lib/postgresql/data
-#
-#  backend:
-#    container_name: management-backend
-#    build: .
-#    ports:
-#      #      - "8080:8080"
-#      - "8443:8443"
-#    depends_on:
-#      - postgres
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    restart: always
-#
-#
-#  frontend:
-#    container_name: management-frontend
-#    build: /Users/lulu/UBB/ANII/Semestrul4/management-system-fe
-#    ports:
-#      - "3000:3000"
-#
-#volumes:
-#  postgres-data:
-
-
 services:
-  citus_coordinator:
-    image: citusdata/citus
+  postgres:
+    container_name: management-database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-
-  citus_worker:
-    image: citusdata/citus
-    depends_on:
-      citus_coordinator:
-        condition: service_started
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   backend1:
     container_name: management-backend
     build: .
     ports:
+      #      - "8080:8080"
       - "8443:8443"
     depends_on:
-      citus_coordinator:
-        condition: service_healthy
+      - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
+    restart: always
 
   backend2:
     image: management-backend:latest
@@ -87,20 +35,88 @@ services:
     ports:
       - "8444:8443"
     depends_on:
-      citus_coordinator:
-        condition: service_healthy
+      - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
+    restart: always
 
 volumes:
-  citus_coordinator_data:
-    driver: local
-  citus_worker_data:
-    driver: local
+  postgres-data:
+
+
+#services:
+#  citus_coordinator:
+#    image: citusdata/citus
+#    volumes:
+#      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+#      - citus_coordinator_data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+#
+#  citus_worker:
+#    image: citusdata/citus
+#    volumes:
+#      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+#      - citus_worker_data:/var/lib/postgresql/data
+#    depends_on:
+#      citus_coordinator:
+#        condition: service_started
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    deploy:
+#      replicas: 2
+#      restart_policy:
+#        condition: on-failure
+#
+#  backend1:
+#    container_name: management-backend
+#    build: .
+#    ports:
+#      - "8443:8443"
+#    depends_on:
+#      citus_coordinator:
+#        condition: service_healthy
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+#
+#  backend2:
+#    image: management-backend:latest
+#    build: .
+#    ports:
+#      - "8444:8443"
+#    depends_on:
+#      citus_coordinator:
+#        condition: service_healthy
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+#
+#volumes:
+#  citus_coordinator_data:
+#    driver: local
+#  citus_worker_data:
+#    driver: local
 
