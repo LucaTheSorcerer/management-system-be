@@ -18,4 +18,7 @@ public class Department {
 
     @Column(name = "department_name")
     private String departmentName;
+
+    @Version
+    private int version;
 }

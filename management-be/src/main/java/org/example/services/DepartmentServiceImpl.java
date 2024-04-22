@@ -1,5 +1,6 @@
 package org.example.services;
 
+import jakarta.transaction.Transactional;
 import org.example.entities.Department;
 import org.example.repositories.DepartmentRepository;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentRepository.save(department);
     }
 
+    @Transactional
     @Override
     public Department updateDepartment(Long id, Department department) throws InterruptedException {
         // Validate if department name is not null or empty
