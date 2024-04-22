@@ -29,21 +29,37 @@ services:
         condition: on-failure
     restart: always
 
+
+
   backend2:
-    image: management-backend:latest
-    build: .
+    container_name: management-backend-python
+    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
     ports:
-      - "8444:8443"
+      - "5001:5001"
     depends_on:
       - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-    restart: always
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
 
 volumes:
   postgres-data:
+
+
+
+#  backend2:
+#    image: management-backend:latest
+#    build: .
+#    ports:
+#      - "8444:8443"
+#    depends_on:
+#      - postgres
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
+#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+#    restart: always
 
 
 #services:
