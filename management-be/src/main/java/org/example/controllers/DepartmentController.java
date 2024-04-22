@@ -106,4 +106,20 @@ public class DepartmentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
         }
     }
+
+    @PutMapping("/concurrent/{id}")
+    public ResponseEntity<Department> updateDepartmentConcurrently(@PathVariable Long id, @RequestBody Department department) throws InterruptedException {
+        Department existing = departmentService.getDepartmentById(id);
+        existing.setDepartmentName("Java New Name 1");
+        departmentService.updateDepartment(id, existing);
+
+        // Simulate delay to create a concurrency scenario
+        Thread.sleep(5000);
+
+        existing.setDepartmentName("Java New Name 2");
+        Department updatedDepartment = departmentService.updateDepartment(id, existing);
+        return ResponseEntity.ok(updatedDepartment);
+    }
+
+
 }
