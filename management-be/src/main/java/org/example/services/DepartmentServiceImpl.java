@@ -78,4 +78,19 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         departmentRepository.deleteById(id);
     }
+
+
+    // Service method to handle the update with simulated delay
+    @Transactional
+    @Override
+    public Department updateDepartmentLostUpdate(Long id, String newName) throws InterruptedException {
+        Optional<Department> existingDepartment = departmentRepository.findById(id);
+        if (existingDepartment.isEmpty()) {
+            throw new IllegalArgumentException("Department not found");
+        }
+        Department existing = existingDepartment.get();
+        existing.setDepartmentName(newName);
+        Thread.sleep(2000); // Simulate processing delay
+        return departmentRepository.save(existing);
+    }
 }

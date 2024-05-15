@@ -1,551 +1,88 @@
-services:
-  postgres:
-    container_name: management-database
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  backend1:
-    container_name: management-backend
-    build: .
-    ports:
-      - "8443:8443"
-    depends_on:
-      - postgres
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    restart: always
-
-
-
-  backend2:
-    container_name: management-backend-python
-    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
-    ports:
-      - "5001:5001"
-    depends_on:
-      - postgres
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - JWT_SECRET=${JWT_SECRET}
-
-  frontend:
-    container_name: management-frontend
-    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe-new
-    ports:
-      - "3000:443"
-
-
-#  frontend2:
-#    container_name: management-frontend
-#    build: /Users/lulu/UBB/ANII/Semestrul4/amigo-fe
-#    ports:
-#      - "3000:443"
-
-
-volumes:
-  postgres-data:
-
-#version: '3.8'
-#
-#services:
-#  postgres-master:
-#    container_name: postgres-master
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres-master-data:/var/lib/postgresql/data
-#      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
-#    networks:
-#      - postgres-network
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      postgres
-#      -c wal_level=replica
-#      -c hot_standby=on
-#      -c max_wal_senders=10
-#      -c max_replication_slots=10
-#      -c hot_standby_feedback=on
-#
-#  postgres-slave:
-#    container_name: postgres-slave
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_REPLICATION_USER: replication_user
-#      POSTGRES_REPLICATION_PASSWORD: replication_password
-#    ports:
-#      - "5433:5432"
-#    volumes:
-#      - postgres-slave-data:/var/lib/postgresql/data
-#    networks:
-#      - postgres-network
-#    depends_on:
-#      - postgres-master
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      bash -c "
-#      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
-#      chmod 600 ~/.pgpass
-#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
-#      echo 'Waiting for primary to connect...'
-#      sleep 1s
-#      done
-#      echo 'Backup done, starting replica...'
-#      chmod 0700 /var/lib/postgresql/data
-#      postgres
-#      "
-#
-#  backend1:
-#    container_name: management-backend
-#    build: .
-#    ports:
-#      - "8443:8443"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    networks:
-#      - postgres-network
-#
-#  backend2:
-#    container_name: management-backend-python
-#    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
-#    ports:
-#      - "5001:5001"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      - POSTGRES_USER=${POSTGRES_USER}
-#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#      - POSTGRES_DB=${POSTGRES_DB}
-#      - JWT_SECRET=${JWT_SECRET}
-#    networks:
-#      - postgres-network
-#
+##services:
+##  postgres:
+##    container_name: management-database
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##    ports:
+##      - "5432:5432"
+##    volumes:
+##      - postgres-data:/var/lib/postgresql/data
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      - postgres
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##
+##
+##
+##  backend2:
+##    container_name: management-backend-python
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+##    ports:
+##      - "5001:5001"
+##    depends_on:
+##      - postgres
+##    environment:
+##      - POSTGRES_USER=${POSTGRES_USER}
+##      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+##      - POSTGRES_DB=${POSTGRES_DB}
+##      - JWT_SECRET=${JWT_SECRET}
+##
 ##  frontend:
 ##    container_name: management-frontend
-##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe-new
 ##    ports:
 ##      - "3000:443"
-##    networks:
-##      - postgres-network
+##
+##
+##volumes:
+##  postgres-data:
 #
-#volumes:
-#  postgres-master-data:
-#  postgres-slave-data:
-#
-#networks:
-#  postgres-network:
-#    driver: bridge
-
-
-
-#  backend2:
-#    image: management-backend:latest
-#    build: .
-#    ports:
-#      - "8444:8443"
-#    depends_on:
-#      - postgres
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    restart: always
-
-
-#services:
-#  citus_coordinator:
-#    image: citusdata/citus
-#    volumes:
-#      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-#      - citus_coordinator_data:/var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#
-#  citus_worker:
-#    image: citusdata/citus
-#    volumes:
-#      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-#      - citus_worker_data:/var/lib/postgresql/data
-#    depends_on:
-#      citus_coordinator:
-#        condition: service_started
-#    environment:
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 2
-#      restart_policy:
-#        condition: on-failure
-#
-#  backend1:
-#    container_name: management-backend
-#    build: .
-#    ports:
-#      - "8443:8443"
-#    depends_on:
-#      citus_coordinator:
-#        condition: service_healthy
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#
-#  backend2:
-#    image: management-backend:latest
-#    build: .
-#    ports:
-#      - "8444:8443"
-#    depends_on:
-#      citus_coordinator:
-#        condition: service_healthy
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#
-#volumes:
-#  citus_coordinator_data:
-#    driver: local
-#  citus_worker_data:
-#    driver: local
-
-#version: '3.8'
-#
-#services:
-#  postgres-master-init:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
-#      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-#    volumes:
-#      - postgres-master-data:/var/lib/postgresql/data
-#      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
-#    entrypoint: ["sh", "-c", "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /docker-entrypoint-initdb.d/00_init.sql"]
-#    networks:
-#      - postgres-network
-#
-#  postgres-master:
-#    container_name: postgres-master
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
-#      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres-master-data:/var/lib/postgresql/data
-#    networks:
-#      - postgres-network
-#    depends_on:
-#      - postgres-master-init
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      postgres
-#      -c wal_level=replica
-#      -c hot_standby=on
-#      -c max_wal_senders=10
-#      -c max_replication_slots=10
-#      -c hot_standby_feedback=on
-#
-#  postgres-slave:
-#    container_name: postgres-slave
-#    image: postgres:latest
-#    environment:
-#      PGUSER: replicator
-#      PGPASSWORD: replicator_password
-#    ports:
-#      - "5433:5432"
-#    volumes:
-#      - postgres-slave-data:/var/lib/postgresql/data
-#    networks:
-#      - postgres-network
-#    depends_on:
-#      - postgres-master
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      bash -c "
-#      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
-#      chmod 600 ~/.pgpass
-#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
-#      echo 'Waiting for primary to connect...'
-#      sleep 1s
-#      done
-#      echo 'Backup done, starting replica...'
-#      chmod 0700 /var/lib/postgresql/data
-#      postgres
-#      "
-#
-#  backend1:
-#    container_name: management-backend
-#    build: .
-#    ports:
-#      - "8443:8443"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    networks:
-#      - postgres-network
-#
-#  backend2:
-#    container_name: management-backend-python
-#    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
-#    ports:
-#      - "5001:5001"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      - POSTGRES_USER=${POSTGRES_USER}
-#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#      - POSTGRES_DB=${POSTGRES_DB}
-#      - JWT_SECRET=${JWT_SECRET}
-#    networks:
-#      - postgres-network
-#
-##  frontend:
-##    container_name: management-frontend
-##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
+##version: '3.8'
+##
+##services:
+##  postgres-master:
+##    container_name: postgres-master
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
 ##    ports:
-##      - "3000:443"
+##      - "5432:5432"
+##    volumes:
+##      - postgres-master-data:/var/lib/postgresql/data
+##      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
 ##    networks:
 ##      - postgres-network
-#
-#volumes:
-#  postgres-master-data:
-#  postgres-slave-data:
-#
-#networks:
-#  postgres-network:
-#    driver: bridge
-#version: '3.8'
-#
-#services:
-#  postgres-master:
-#    container_name: postgres-master
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
-#      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres-master-data:/var/lib/postgresql/data
-#      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-#      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
-#    networks:
-#      - postgres-network
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      postgres
-#      -c wal_level=replica
-#      -c hot_standby=on
-#      -c max_wal_senders=10
-#      -c max_replication_slots=10
-#      -c hot_standby_feedback=on
-#
-#  postgres-slave:
-#    container_name: postgres-slave
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_REPLICATION_USER: replication_user
-#      POSTGRES_REPLICATION_PASSWORD: replication_password
-#    ports:
-#      - "5433:5432"
-#    volumes:
-#      - postgres-slave-data:/var/lib/postgresql/data
-#    networks:
-#      - postgres-network
-#    depends_on:
-#      - postgres-master
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      bash -c "
-#      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
-#      chmod 600 ~/.pgpass
-#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
-#      echo 'Waiting for primary to connect...'
-#      sleep 1s
-#      done
-#      echo 'Backup done, starting replica...'
-#      chmod 0700 /var/lib/postgresql/data
-#      postgres
-#      "
-#
-#  backend1:
-#    container_name: management-backend
-#    build: .
-#    ports:
-#      - "8443:8443"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
-#      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-#      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    networks:
-#      - postgres-network
-#
-#  backend2:
-#    container_name: management-backend-python
-#    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
-#    ports:
-#      - "5001:5001"
-#    depends_on:
-#      - postgres-master
-#    environment:
-#      - POSTGRES_USER=${POSTGRES_USER}
-#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#      - POSTGRES_DB=${POSTGRES_DB}
-#      - JWT_SECRET=${JWT_SECRET}
-#    networks:
-#      - postgres-network
-#
-##  frontend:
-##    container_name: management-frontend
-##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
-##    ports:
-##      - "3000:443"
-##    networks:
-##      - postgres-network
-#
-#volumes:
-#  postgres-master-data:
-#  postgres-slave-data:
-#
-#networks:
-#  postgres-network:
-#    driver: bridge
-
-
-#version: '3.8'
-#
-#services:
-#  postgres-master:
-#    container_name: postgres-master
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
-#      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres-master-data:/var/lib/postgresql/data
-##      - ./pg_hba.conf:/var/lib/postgresql/pg_hba.conf
-#      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
-#    networks:
-#      - postgres-network
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    command: |
-#      postgres
-#      -c wal_level=replica
-#      -c hot_standby=on
-#      -c max_wal_senders=10
-#      -c max_replication_slots=10
-#      -c hot_standby_feedback=on
-#
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      postgres
+##      -c wal_level=replica
+##      -c hot_standby=on
+##      -c max_wal_senders=10
+##      -c max_replication_slots=10
+##      -c hot_standby_feedback=on
+##
 ##  postgres-slave:
 ##    container_name: postgres-slave
 ##    image: postgres:latest
@@ -570,6 +107,445 @@ volumes:
 ##    restart: always
 ##    command: |
 ##      bash -c "
+##      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
+##      chmod 600 ~/.pgpass
+##      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
+##      echo 'Waiting for primary to connect...'
+##      sleep 1s
+##      done
+##      echo 'Backup done, starting replica...'
+##      chmod 0700 /var/lib/postgresql/data
+##      postgres
+##      "
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    networks:
+##      - postgres-network
+##
+##  backend2:
+##    container_name: management-backend-python
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+##    ports:
+##      - "5001:5001"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      - POSTGRES_USER=${POSTGRES_USER}
+##      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+##      - POSTGRES_DB=${POSTGRES_DB}
+##      - JWT_SECRET=${JWT_SECRET}
+##    networks:
+##      - postgres-network
+##
+###  frontend:
+###    container_name: management-frontend
+###    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
+###    ports:
+###      - "3000:443"
+###    networks:
+###      - postgres-network
+##
+##volumes:
+##  postgres-master-data:
+##  postgres-slave-data:
+##
+##networks:
+##  postgres-network:
+##    driver: bridge
+#
+#
+#
+##  backend2:
+##    image: management-backend:latest
+##    build: .
+##    ports:
+##      - "8444:8443"
+##    depends_on:
+##      - postgres
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/management-database
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    restart: always
+#
+#
+##services:
+##  citus_coordinator:
+##    image: citusdata/citus
+##    volumes:
+##      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+##      - citus_coordinator_data:/var/lib/postgresql/data
+##    ports:
+##      - "5432:5432"
+##    environment:
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##
+##  citus_worker:
+##    image: citusdata/citus
+##    volumes:
+##      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+##      - citus_worker_data:/var/lib/postgresql/data
+##    depends_on:
+##      citus_coordinator:
+##        condition: service_started
+##    environment:
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 2
+##      restart_policy:
+##        condition: on-failure
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      citus_coordinator:
+##        condition: service_healthy
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##
+##  backend2:
+##    image: management-backend:latest
+##    build: .
+##    ports:
+##      - "8444:8443"
+##    depends_on:
+##      citus_coordinator:
+##        condition: service_healthy
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://citus_coordinator:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##
+##volumes:
+##  citus_coordinator_data:
+##    driver: local
+##  citus_worker_data:
+##    driver: local
+#
+##version: '3.8'
+##
+##services:
+##  postgres-master-init:
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+##      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+##    volumes:
+##      - postgres-master-data:/var/lib/postgresql/data
+##      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+##    entrypoint: ["sh", "-c", "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /docker-entrypoint-initdb.d/00_init.sql"]
+##    networks:
+##      - postgres-network
+##
+##  postgres-master:
+##    container_name: postgres-master
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+##      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+##    ports:
+##      - "5432:5432"
+##    volumes:
+##      - postgres-master-data:/var/lib/postgresql/data
+##    networks:
+##      - postgres-network
+##    depends_on:
+##      - postgres-master-init
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      postgres
+##      -c wal_level=replica
+##      -c hot_standby=on
+##      -c max_wal_senders=10
+##      -c max_replication_slots=10
+##      -c hot_standby_feedback=on
+##
+##  postgres-slave:
+##    container_name: postgres-slave
+##    image: postgres:latest
+##    environment:
+##      PGUSER: replicator
+##      PGPASSWORD: replicator_password
+##    ports:
+##      - "5433:5432"
+##    volumes:
+##      - postgres-slave-data:/var/lib/postgresql/data
+##    networks:
+##      - postgres-network
+##    depends_on:
+##      - postgres-master
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      bash -c "
+##      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
+##      chmod 600 ~/.pgpass
+##      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
+##      echo 'Waiting for primary to connect...'
+##      sleep 1s
+##      done
+##      echo 'Backup done, starting replica...'
+##      chmod 0700 /var/lib/postgresql/data
+##      postgres
+##      "
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    networks:
+##      - postgres-network
+##
+##  backend2:
+##    container_name: management-backend-python
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+##    ports:
+##      - "5001:5001"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      - POSTGRES_USER=${POSTGRES_USER}
+##      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+##      - POSTGRES_DB=${POSTGRES_DB}
+##      - JWT_SECRET=${JWT_SECRET}
+##    networks:
+##      - postgres-network
+##
+###  frontend:
+###    container_name: management-frontend
+###    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
+###    ports:
+###      - "3000:443"
+###    networks:
+###      - postgres-network
+##
+##volumes:
+##  postgres-master-data:
+##  postgres-slave-data:
+##
+##networks:
+##  postgres-network:
+##    driver: bridge
+##version: '3.8'
+##
+##services:
+##  postgres-master:
+##    container_name: postgres-master
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+##      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+##    ports:
+##      - "5432:5432"
+##    volumes:
+##      - postgres-master-data:/var/lib/postgresql/data
+##      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+##      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+##    networks:
+##      - postgres-network
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      postgres
+##      -c wal_level=replica
+##      -c hot_standby=on
+##      -c max_wal_senders=10
+##      -c max_replication_slots=10
+##      -c hot_standby_feedback=on
+##
+##  postgres-slave:
+##    container_name: postgres-slave
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_REPLICATION_USER: replication_user
+##      POSTGRES_REPLICATION_PASSWORD: replication_password
+##    ports:
+##      - "5433:5432"
+##    volumes:
+##      - postgres-slave-data:/var/lib/postgresql/data
+##    networks:
+##      - postgres-network
+##    depends_on:
+##      - postgres-master
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      bash -c "
+##      echo '*:*:*:replication_user:replication_password' > ~/.pgpass
+##      chmod 600 ~/.pgpass
+##      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432 -U replication_user --wal-method=stream; do
+##      echo 'Waiting for primary to connect...'
+##      sleep 1s
+##      done
+##      echo 'Backup done, starting replica...'
+##      chmod 0700 /var/lib/postgresql/data
+##      postgres
+##      "
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    networks:
+##      - postgres-network
+##
+##  backend2:
+##    container_name: management-backend-python
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+##    ports:
+##      - "5001:5001"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      - POSTGRES_USER=${POSTGRES_USER}
+##      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+##      - POSTGRES_DB=${POSTGRES_DB}
+##      - JWT_SECRET=${JWT_SECRET}
+##    networks:
+##      - postgres-network
+##
+###  frontend:
+###    container_name: management-frontend
+###    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe
+###    ports:
+###      - "3000:443"
+###    networks:
+###      - postgres-network
+##
+##volumes:
+##  postgres-master-data:
+##  postgres-slave-data:
+##
+##networks:
+##  postgres-network:
+##    driver: bridge
+#
+#
+##services:
+##  postgres-master:
+##    container_name: postgres-master
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_USER: ${POSTGRES_USER}
+##      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+##      POSTGRES_DB: ${POSTGRES_DB}
+##      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+##      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+##    ports:
+##      - "5432:5432"
+##    volumes:
+##      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+##
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##    command: |
+##      postgres
+##      -c wal_level=replica
+##      -c max_wal_senders=10
+##      -c max_replication_slots=10
+##      -c hot_standby=on
+##      -c listen_addresses='*'
+##
+##  postgres-slave:
+##    container_name: postgres-slave
+##    image: postgres:latest
+##    environment:
+##      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER}
+##      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD}
+##    ports:
+##      - "5433:5432"
+##    depends_on:
+##      - postgres-master
+##    command: |
+##      bash -c "
 ##      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-master --port=5432
 ##      do
 ##      echo 'Waiting for primary to connect...'
@@ -579,6 +555,105 @@ volumes:
 ##      chmod 0700 /var/lib/postgresql/data
 ##      postgres
 ##      "
+##
+##  backend1:
+##    container_name: management-backend
+##    build: .
+##    ports:
+##      - "8443:8443"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+##      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+##      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+##    deploy:
+##      replicas: 1
+##      restart_policy:
+##        condition: on-failure
+##    restart: always
+##
+##
+##  backend2:
+##    container_name: management-backend-python
+##    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+##    ports:
+##      - "5001:5001"
+##    depends_on:
+##      - postgres-master
+##    environment:
+##      - POSTGRES_USER=${POSTGRES_USER}
+##      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+##      - POSTGRES_DB=${POSTGRES_DB}
+##      - JWT_SECRET=${JWT_SECRET}
+##
+##
+##volumes:
+##  postgres-master-data:
+##  postgres-slave-data:
+#
+#
+#
+#
+
+
+#version: '3.8'
+#x-postgres-common:
+#  &postgres-common
+#  image: postgres:latest
+#  restart: always
+#  healthcheck:
+#    test: 'pg_isready -U ${POSTGRES_USER} --dbname=${POSTGRES_DB}'
+#    interval: 10s
+#    timeout: 5s
+#    retries: 5
+#
+#services:
+#  postgres_primary:
+#    <<: *postgres-common
+#    container_name: postgres-primary
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+#      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+#    volumes:
+#      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+#
+#    command: |
+#      postgres
+#      -c wal_level=replica
+#      -c hot_standby=on
+#      -c max_wal_senders=10
+#      -c max_replication_slots=10
+#      -c hot_standby_feedback=on
+#
+#
+#  postgres_replica:
+#    <<: *postgres-common
+#    container_name: postgres-replica
+#    ports:
+#      - "5433:5432"
+#    environment:
+#      PGUSER: replicator
+#      PGPASSWORD: replicator_password
+#
+#    command: |
+#      bash -c "
+#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres_primary --port=5432
+#      do
+#      echo 'Waiting for primary to connect...'
+#      sleep 1s
+#      done
+#      echo 'Backup done, starting replica...'
+#      chmod 0700 /var/lib/postgresql/data
+#      postgres
+#      "
+#    depends_on:
+#      - postgres_primary
 #
 #  backend1:
 #    container_name: management-backend
@@ -586,18 +661,12 @@ volumes:
 #    ports:
 #      - "8443:8443"
 #    depends_on:
-#      - postgres-master
+#      - postgres_primary
 #    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-master:5432/${POSTGRES_DB}
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-primary:5432/${POSTGRES_DB}
 #      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
 #      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#    restart: always
-#    networks:
-#      - postgres-network
+#
 #
 #  backend2:
 #    container_name: management-backend-python
@@ -605,22 +674,115 @@ volumes:
 #    ports:
 #      - "5001:5001"
 #    depends_on:
-#      - postgres-master
+#      - postgres_primary
 #    environment:
 #      - POSTGRES_USER=${POSTGRES_USER}
 #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 #      - POSTGRES_DB=${POSTGRES_DB}
 #      - JWT_SECRET=${JWT_SECRET}
-#    networks:
-#      - postgres-network
+#
 #
 #volumes:
-#  postgres-master-data:
+#  postgres-primary-data:
 #  postgres-slave-data:
-#
-#networks:
-#  postgres-network:
-#    driver: bridge
+
+
+
+version: '3.8'
+x-postgres-common:
+  &postgres-common
+  image: postgres:latest
+  user: postgres
+  restart: always
+  healthcheck:
+    test: 'pg_isready -U user --dbname=postgres'
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
+services:
+  postgres_primary:
+    <<: *postgres-common
+    container_name: postgres-primary
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: |
+      postgres 
+      -c wal_level=replica 
+      -c hot_standby=on 
+      -c max_wal_senders=10 
+      -c max_replication_slots=10 
+      -c hot_standby_feedback=on
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+
+  postgres_replica:
+    <<: *postgres-common
+    container_name: postgres-replica
+    ports:
+      - 5433:5432
+    environment:
+      PGUSER: replicator
+      PGPASSWORD: replicator_password
+    command: |
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres_primary --port=5432
+      do
+      echo 'Waiting for primary to connect...'
+      sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      postgres
+      "
+    depends_on:
+      - postgres_primary
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+
+  backend1:
+    container_name: management-backend
+    build: .
+    ports:
+      - "8443:8443"
+    depends_on:
+      - postgres_primary
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-primary:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
+  backend2:
+    container_name: management-backend-python
+    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-be-python/management-backend-python
+    ports:
+      - "5001:5001"
+    depends_on:
+      - postgres_primary
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+
+  frontend:
+    container_name: management-frontend
+    build: /Users/lulu/UBB/ANII/Semestrul4/DBMS/management-system-fe-new
+    ports:
+      - "3000:443"
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
+
+
 
 
 

@@ -14,4 +14,6 @@ public interface DepartmentService {
     List<Department> getAllDepartments();
 
     void deleteDepartment(Long id);
+
+    Department updateDepartmentLostUpdate(Long id, String newName) throws InterruptedException;
 }

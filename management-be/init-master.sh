@@ -1,12 +1,4 @@
 #!/bin/bash
-#set -e
-#
-#psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-#    CREATE USER replication_user WITH REPLICATION ENCRYPTED PASSWORD 'replication_password';
-#    SELECT pg_create_physical_replication_slot('replication_slot') WHERE NOT EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'replication_slot');
-#EOSQL
-
-#!/bin/bash
 set -e
 
 # Check if the data directory is empty
@@ -26,5 +18,3 @@ EOSQL
 else
     echo "Database directory is not empty, skipping initialization."
 fi
-
-
